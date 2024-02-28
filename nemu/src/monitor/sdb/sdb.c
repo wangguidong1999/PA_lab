@@ -53,6 +53,31 @@ static int cmd_q(char *args) {
   return -1;
 }
 
+
+static int cmd_si(char *args) {
+	return 0;
+}
+
+static int cmd_info(char *args) {
+	return 0;
+}
+
+static int cmd_x(char *args) {
+	return 0;
+}
+
+static int cmd_p(char *args) {
+	return 0;
+}
+
+static int cmd_w(char *args) {
+	return 0;
+}
+
+static int cmd_d(char *args) {
+	return 0;
+}
+
 static int cmd_help(char *args);
 
 static struct {
@@ -63,6 +88,14 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
+	{ "si", "si [N] : Execute N instructions step by step, and pause. When N is not given, default=1", cmd_si},
+	{ "info", "info r : Display state of registers.  info w : Display watchpoints information", cmd_info},
+	{ "x", "x N EXPR : Calculate value of expression, Taking the value as beginning memory address, print sequential N 4-bytes with hex. ", cmd_x},
+	{ "p", "p EXPR : Calculate value of expression", cmd_p},
+	{ "w", "w EXPR : Set watchpoint, pause execution when value of EXPR changes.", cmd_w},
+	{ "d", "d N: Delete watchpoint with number N", cmd_d},
+	
+	
 
   /* TODO: Add more commands */
 
