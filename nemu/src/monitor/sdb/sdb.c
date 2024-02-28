@@ -18,7 +18,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
-
+#include <memory/paddr.h>
 static int is_batch_mode = false;
 
 void init_regex();
@@ -55,14 +55,99 @@ static int cmd_q(char *args) {
 
 
 static int cmd_si(char *args) {
-	return 0;
+	if (args == NULL) {
+	/* no argument given, default N = 1 */
+		cpu_exec(1);
+		return 0;
+	}
+	else {
+		char *arg = strtok(NULL, " ");
+		/* arg: char* -> uint64_t */
+		if (arg != NULL) {
+        int64_t N = strtoll(arg, NULL, 0);
+				//printf("N(int64_t) = %ld\n", N);
+				if (N <= 0) {
+					printf("Please input a positive interger\n");
+					return 0;
+				}
+				else {
+					cpu_exec(N);
+					return 0;
+				}
+    } else {
+        // 处理 arg 为 NULL 的情况
+        printf("Invalid argument.\n");
+        return -1;
+    }
+	}
+	return -1;
 }
 
 static int cmd_info(char *args) {
-	return 0;
+	if (args == NULL) {
+	/* no argument given, input again */
+		printf("Please input \"info [SUBCMD]\", SUBCMD can be \"r\" or \"w\"\n");
+		return 0;
+	}
+	else {
+		char *arg = strtok(NULL, " ");
+		/* arg needs to be "r" or "w". */
+		if (arg != NULL) {
+			if (0 == strcmp(arg, "r")) {
+				isa_reg_display();
+				return 0;
+			}
+			else if (0 == strcmp(arg, "w")) {
+			// TODO	
+				return 0;
+			}
+			else {
+				printf("SUBCMD not defined\n");
+				return 0;
+			}		
+		}
+		else {
+			printf("Invalid argument.\n");
+			return -1;
+		}
+	}
+	return -1;
 }
 
 static int cmd_x(char *args) {
+
+	if (args == NULL) {
+	/* no argument given, input again */
+		printf("Please input as like \"x N EXPR\",\n");
+		return 0;
+	}	
+	char *N_char = strtok(NULL, " ");
+	int32_t N = strtol(N_char, NULL, 0);
+	if (N <= 0) {
+		printf("Please input N as a positive interger\n");
+		return 0;
+	}
+	char *EXPR_char = strtok(NULL, " ");//need to be positive
+/*
+	int32_t EXPR = strtol(EXPR_char, NULL, 0);
+	if (EXPR <= 0) {
+		printf("Please make EXPR a positive interger\n");
+		return 0;
+	}
+	uint32_t addr = (uint32_t)EXPR;
+*/
+	uint32_t addr = strtol(EXPR_char, NULL, 0);	
+	uint32_t mem_content = 0;
+	//printf("N = %d\n", N);
+	//printf("addr = %x\n", addr);
+	//printf("mem_content = %x\n", paddr_read(addr, 4));
+	
+	for (int i = 0; i < N; i++) {
+		mem_content = paddr_read(addr, 4);// 4 bytes : return *(uint32_t *)addr;
+		addr = addr + 4;
+		printf("%x\t%08x\n", addr, mem_content);
+	}
+	
 	return 0;
 }
 
